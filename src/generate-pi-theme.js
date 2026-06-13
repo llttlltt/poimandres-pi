@@ -1,5 +1,6 @@
 import { mkdirSync, writeFileSync } from "fs";
 import { join, resolve } from "path";
+import { extractWhitePalette } from "./extract-white-palette.js";
 import {
 	base as BASE_THEME,
 	noitalics as NOITALICS_THEME,
@@ -19,28 +20,9 @@ const baseColors = paletteFromTheme(BASE_THEME);
 const noitalicsColors = paletteFromTheme(NOITALICS_THEME);
 const stormColors = paletteFromTheme(STORM_THEME);
 const stormNoitalicsColors = paletteFromTheme(STORM_NOITALICS_THEME);
-const whiteColors = {
-	...baseColors,
-	bg: "#FEFEFF",
-	focus: "#c0d0df",
-	gray: "#969cbd",
-	darkerGray: "#969cbd",
-	bluishGray: "#969cbd",
-	bluishGrayBrighter: "#7390AA",
-	offWhite: "#3b3e48",
-	selection: "#969cbd",
-	black: "#000000",
-	white: "#000000",
-	lightBlue: "#0EBFFF",
-	lowerBlue: "#8ABACD",
-	desaturatedBlue: "#8ABACD",
-	brightMint: "#01DAB2",
-	lowerMint: "#62AA9B",
-	hotRed: "#ff2090",
-	pink: "#EB8394",
-	brightYellow: "#FFD467",
-	transparent: "#00000000",
-};
+const whiteColors = extractWhitePalette(
+	resolve(process.cwd(), "drcmda/poimandres-theme/themes/poimandres-color-theme-white.json"),
+);
 
 function buildTheme({ name, palette }) {
 	const vars = {

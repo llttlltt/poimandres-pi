@@ -2,12 +2,16 @@ import Ajv from "ajv";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { beforeAll, describe, expect, test } from "vitest";
+import { CANONICAL_MAPPING, extractWhitePalette } from "../src/extract-white-palette.js";
 
 const schemaUrl =
 	"https://raw.githubusercontent.com/earendil-works/pi/main/packages/coding-agent/src/modes/interactive/theme/theme-schema.json";
 const schemaPath = resolve(".cache/pi-theme-schema.json");
 const themeDir = resolve("themes/pi");
 const sourceThemeDir = resolve("drcmda/poimandres-theme/themes");
+const whiteSourcePath = resolve(
+	"drcmda/poimandres-theme/themes/poimandres-color-theme-white.json",
+);
 const themeFiles = [
 	"poimandres.json",
 	"poimandres-noitalics.json",
@@ -95,6 +99,56 @@ describe("Pi theme schema and mapping validation", () => {
 				allowedValues.has(generated.vars[value]),
 				`${file}: ${key} -> ${value} resolves to ${generated.vars[value]}, which is not present in upstream source theme colors or tokenColors.foreground`,
 			).toBe(true);
+		}
+	});
+});
+
+describe("White palette extraction", () => {
+	const sourceWhiteJson = JSON.parse(readFileSync(whiteSourcePath, "utf8"));
+
+	test("each palette key maps to the correct upstream white JSON token value", () => {
+		const palette = extractWhitePalette(whiteSourcePath);
+		for (const [key, token] of Object.entries(CANONICAL_MAPPING)) {
+			expect(palette[key], `palette key "${key}" should equal colors["${token}"]`).toBe(
+				sourceWhiteJson.colors[token],
+			);
+		}
+	});
+
+	test("blueishGreen maps to source.sass keyword.control token foreground", () => {
+		const palette = extractWhitePalette(whiteSourcePath);
+		const entry = (sourceWhiteJson.tokenColors ?? []).find((e) => {
+			const s = e.scope;
+			return (Array.isArray(s) ? s : [s]).includes("source.sass keyword.control");
+		});
+		expect(palette.blueishGreen).toBe(entry?.settings?.foreground);
+	});
+
+	test("bluishGray resolves to #506477 (upstream inputValidation.infoBackground)", () => {
+		const palette = extractWhitePalette(whiteSourcePath);
+		expect(palette.bluishGray).toBe("#506477");
+	});
+
+	test("selection resolves to #717cb425 (upstream editor.selectionBackground)", () => {
+		const palette = extractWhitePalette(whiteSourcePath);
+		expect(palette.selection).toBe("#717cb425");
+	});
+});
+
+describe("Cross-variant palette consistency", () => {
+	// Only these two palette keys are identical between the upstream dark and white
+	// themes. All other "accent" colours (hotRed, lightBlue, brightMint, …) differ
+	// intentionally — the white theme is a distinct light-mode palette.
+	const SHARED_ACCENT_KEYS = ["transparent", "blueishGreen"];
+
+	test("shared accent keys are equal between poimandres.json and poimandres-white.json", () => {
+		const dark = loadTheme("poimandres.json");
+		const white = loadTheme("poimandres-white.json");
+		for (const key of SHARED_ACCENT_KEYS) {
+			expect(
+				white.vars[key],
+				`accent key "${key}" differs between poimandres and poimandres-white`,
+			).toBe(dark.vars[key]);
 		}
 	});
 });

@@ -12,14 +12,14 @@
     "lowerMint": "#62AA9B",
     "lowerBlue": "#8ABACD",
     "desaturatedBlue": "#8ABACD",
-    "bluishGray": "#969cbd",
+    "bluishGray": "#506477",
     "bluishGrayBrighter": "#7390AA",
     "darkerGray": "#969cbd",
     "brightYellow": "#FFD467",
     "pink": "#EB8394",
     "blueishGreen": "#42675A",
     "transparent": "#00000000",
-    "selection": "#969cbd"
+    "selection": "#717cb425"
   },
   "colors": {
     "accent": "lightBlue",
