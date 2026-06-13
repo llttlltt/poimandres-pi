@@ -1,13 +1,17 @@
 {
-  "name": "poimandres-theme-extractor",
-  "private": true,
-  "packageManager": "pnpm@9.0.0",
-  "scripts": {
-    "generate:pi-theme": "node src/generate-pi-theme.js",
-    "test": "vitest run"
-  },
-  "devDependencies": {
-    "ajv": "^8.20.0",
-    "vitest": "^3.2.6"
-  }
+	"name": "poimandres-theme-extractor",
+	"private": true,
+	"type": "module",
+	"packageManager": "pnpm@9.0.0",
+	"scripts": {
+		"clean:themes": "rm -rf themes && mkdir -p themes",
+		"prebuild": "pnpm run test && pnpm run clean:themes",
+		"build": "node src/generate-pi-theme.js",
+		"generate:pi-theme": "pnpm run build",
+		"test": "vitest run"
+	},
+	"devDependencies": {
+		"ajv": "^8.20.0",
+		"vitest": "^3.2.6"
+	}
 }

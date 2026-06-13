@@ -18,7 +18,8 @@
     "brightYellow": "#fffac2",
     "pink": "#f087bd",
     "blueishGreen": "#42675A",
-    "transparent": "#00000000"
+    "transparent": "#00000000",
+    "selection": "#717cb425"
   },
   "colors": {
     "accent": "lightBlue",
