@@ -1,0 +1,13 @@
+{
+  "name": "poimandres-theme-extractor",
+  "private": true,
+  "packageManager": "pnpm@9.0.0",
+  "scripts": {
+    "generate:pi-theme": "node src/generate-pi-theme.js",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "ajv": "^8.20.0",
+    "vitest": "^3.2.6"
+  }
+}
