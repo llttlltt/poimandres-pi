@@ -4,7 +4,7 @@ import { readFileSync } from "fs";
  * Canonical mapping from palette key → VS Code `colors` token in the upstream white JSON.
  * Derived from drcmda/poimandres-theme/src/theme.js template.
  */
-export const CANONICAL_MAPPING = {
+export const CANONICAL_MAPPING: Record<string, string> = {
 	bg: "terminal.ansiBlack",
 	focus: "activityBarBadge.background",
 	gray: "terminal.ansiBrightBlack",
@@ -28,15 +28,23 @@ export const CANONICAL_MAPPING = {
 
 const BLUEISH_GREEN_SCOPE = "source.sass keyword.control";
 
+interface UpstreamWhiteJson {
+	colors?: Record<string, string>;
+	tokenColors?: Array<{
+		scope?: string | string[];
+		settings?: { foreground?: string };
+	}>;
+}
+
 /**
  * Extract the 21-key white palette from the upstream white JSON file.
  *
- * @param {string} whiteJsonPath - Absolute path to poimandres-color-theme-white.json
- * @returns {Record<string, string>} Palette object with 21 keys
+ * @param whiteJsonPath - Absolute path to poimandres-color-theme-white.json
+ * @returns Palette object with 21 keys
  */
-export function extractWhitePalette(whiteJsonPath) {
-	const source = JSON.parse(readFileSync(whiteJsonPath, "utf8"));
-	const palette = {};
+export function extractWhitePalette(whiteJsonPath: string): Record<string, string> {
+	const source = JSON.parse(readFileSync(whiteJsonPath, "utf8")) as UpstreamWhiteJson;
+	const palette: Record<string, string> = {};
 
 	// Extract the 20 direct `colors` token mappings
 	for (const [key, token] of Object.entries(CANONICAL_MAPPING)) {

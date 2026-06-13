@@ -1,19 +1,40 @@
 import { mkdirSync, writeFileSync } from "fs";
 import { join, resolve } from "path";
-import { extractWhitePalette } from "./extract-white-palette.js";
 import {
 	base as BASE_THEME,
 	noitalics as NOITALICS_THEME,
 	stormNoitalics as STORM_NOITALICS_THEME,
 	storm as STORM_THEME,
 } from "../drcmda/poimandres-theme/src/theme.js";
+import { extractWhitePalette } from "./extract-white-palette.js";
 
-function paletteFromTheme(theme) {
-	if (!theme || !theme.colors) {
+interface PoimandresTheme {
+	colors: Record<string, string>;
+}
+
+interface BuildThemeInput {
+	name: string;
+	palette: Record<string, string>;
+}
+
+interface PiThemeOutput {
+	$schema: string;
+	name: string;
+	vars: Record<string, string>;
+	colors: Record<string, string>;
+	export: Record<string, string>;
+}
+
+function paletteFromTheme(theme: unknown): Record<string, string> {
+	if (
+		!theme ||
+		typeof theme !== "object" ||
+		!("colors" in theme) ||
+		typeof (theme as PoimandresTheme).colors !== "object"
+	) {
 		throw new Error("Expected upstream theme to expose a colors palette");
 	}
-
-	return theme.colors;
+	return (theme as PoimandresTheme).colors;
 }
 
 const baseColors = paletteFromTheme(BASE_THEME);
@@ -24,7 +45,7 @@ const whiteColors = extractWhitePalette(
 	resolve(process.cwd(), "drcmda/poimandres-theme/themes/poimandres-color-theme-white.json"),
 );
 
-function buildTheme({ name, palette }) {
+function buildTheme({ name, palette }: BuildThemeInput): PiThemeOutput {
 	const vars = {
 		bg: palette.bg,
 		focus: palette.focus,
@@ -43,21 +64,25 @@ function buildTheme({ name, palette }) {
 		pink: palette.pink,
 		blueishGreen: palette.blueishGreen,
 		transparent: palette.transparent,
-		selection: palette.selection,
-	};
+		// Pi does not support RGBA hex. The upstream `selection` is semi-transparent
+		// (e.g. #717cb425). `focus` is the nearest solid equivalent — the canonical
+		// "active area" background in every Poimandres variant, and already present
+		// in the upstream JSON (activityBarBadge.background).
+		selection: palette.focus,
+	} as const;
 
-	const colors = {
-		accent: "lightBlue",
-		border: "bluishGray",
-		borderAccent: "lightBlue",
-		borderMuted: "bluishGray",
+	const colors: Record<string, keyof typeof vars | ""> = {
+		accent: "brightMint",
+		border: "bg",
+		borderAccent: "brightMint",
+		borderMuted: "lowerBlue",
 		success: "brightMint",
 		error: "hotRed",
 		warning: "brightYellow",
-		muted: "gray",
-		dim: "darkerGray",
+		muted: "offWhite",
+		dim: "gray",
 		text: "",
-		thinkingText: "gray",
+		thinkingText: "desaturatedBlue",
 
 		selectedBg: "selection",
 		userMessageBg: "focus",
@@ -66,10 +91,10 @@ function buildTheme({ name, palette }) {
 		customMessageText: "",
 		customMessageLabel: "lightBlue",
 		toolPendingBg: "focus",
-		toolSuccessBg: "lowerMint",
+		toolSuccessBg: "bluishGray",
 		toolErrorBg: "hotRed",
-		toolTitle: "",
-		toolOutput: "gray",
+		toolTitle: "brightMint",
+		toolOutput: "offWhite",
 
 		mdHeading: "offWhite",
 		mdLink: "lightBlue",
@@ -87,7 +112,7 @@ function buildTheme({ name, palette }) {
 		toolDiffContext: "gray",
 
 		syntaxComment: "darkerGray",
-		syntaxKeyword: "brightMint",
+		syntaxKeyword: "lowerBlue",
 		syntaxFunction: "lightBlue",
 		syntaxVariable: "offWhite",
 		syntaxString: "brightMint",
@@ -96,17 +121,17 @@ function buildTheme({ name, palette }) {
 		syntaxOperator: "gray",
 		syntaxPunctuation: "gray",
 
-		thinkingOff: "darkerGray",
-		thinkingMinimal: "bluishGray",
-		thinkingLow: "lowerBlue",
-		thinkingMedium: "lightBlue",
+		thinkingOff: "bluishGray",
+		thinkingMinimal: "darkerGray",
+		thinkingLow: "lightBlue",
+		thinkingMedium: "lowerBlue",
 		thinkingHigh: "brightMint",
 		thinkingXhigh: "hotRed",
 
 		bashMode: "brightMint",
 	};
 
-	const exportColors = {
+	const exportColors: Record<string, string> = {
 		pageBg: "bg",
 		cardBg: "focus",
 		infoBg: "bluishGray",
@@ -125,8 +150,9 @@ function buildTheme({ name, palette }) {
 const outputDir = resolve(process.cwd(), "themes/pi");
 mkdirSync(outputDir, { recursive: true });
 
-const themes = [
+const themes: Array<{ file: string; data: PiThemeOutput }> = [
 	{
+		// The upstream noitalics theme is color-identical to white; only the source theme name differs.
 		file: "poimandres.json",
 		data: buildTheme({
 			name: "poimandres",
@@ -134,26 +160,14 @@ const themes = [
 		}),
 	},
 	{
-		file: "poimandres-noitalics.json",
-		data: buildTheme({
-			name: "poimandres noitalics",
-			palette: noitalicsColors,
-		}),
-	},
-	{
+		// The upstream storm-noitalics theme is color-identical to white; only the source theme name differs.
 		file: "poimandres-storm.json",
 		data: buildTheme({
 			name: "poimandres storm",
 			palette: stormColors,
 		}),
 	},
-	{
-		file: "poimandres-noitalics-storm.json",
-		data: buildTheme({
-			name: "poimandres storm noitalics",
-			palette: stormNoitalicsColors,
-		}),
-	},
+
 	{
 		// The upstream white-noitalics theme is color-identical to white; only the source theme name differs.
 		file: "poimandres-white.json",

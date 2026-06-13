@@ -1,8 +1,24 @@
-import Ajv from "ajv";
+import Ajv, { ValidateFunction } from "ajv";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { beforeAll, describe, expect, test } from "vitest";
 import { CANONICAL_MAPPING, extractWhitePalette } from "../src/extract-white-palette.js";
+
+interface PiTheme {
+	$schema: string;
+	name: string;
+	vars: Record<string, string>;
+	colors: Record<string, string>;
+	export: Record<string, string>;
+}
+
+interface VsCodeTheme {
+	colors?: Record<string, string>;
+	tokenColors?: Array<{
+		scope?: string | string[];
+		settings?: { foreground?: string };
+	}>;
+}
 
 const schemaUrl =
 	"https://raw.githubusercontent.com/earendil-works/pi/main/packages/coding-agent/src/modes/interactive/theme/theme-schema.json";
@@ -14,17 +30,13 @@ const whiteSourcePath = resolve(
 );
 const themeFiles = [
 	"poimandres.json",
-	"poimandres-noitalics.json",
 	"poimandres-storm.json",
-	"poimandres-noitalics-storm.json",
 	"poimandres-white.json",
 ];
 
-const sourceThemeMap = {
+const sourceThemeMap: Record<string, string> = {
 	"poimandres.json": "poimandres-color-theme.json",
-	"poimandres-noitalics.json": "poimandres-color-theme-noitalics.json",
 	"poimandres-storm.json": "poimandres-color-theme-storm.json",
-	"poimandres-noitalics-storm.json": "poimandres-color-theme-noitalics-storm.json",
 	"poimandres-white.json": "poimandres-color-theme-white.json",
 };
 
@@ -33,7 +45,7 @@ const testCases = themeFiles.map((file) => ({
 	sourceFile: sourceThemeMap[file],
 }));
 
-async function loadSchema() {
+async function loadSchema(): Promise<Record<string, unknown>> {
 	if (!existsSync(schemaPath)) {
 		const response = await fetch(schemaUrl);
 		expect(response.ok).toBe(true);
@@ -42,26 +54,30 @@ async function loadSchema() {
 		writeFileSync(schemaPath, schema);
 	}
 
-	return JSON.parse(readFileSync(schemaPath, "utf8"));
+	return JSON.parse(readFileSync(schemaPath, "utf8")) as Record<string, unknown>;
 }
 
-function loadTheme(file, dir = themeDir) {
-	return JSON.parse(readFileSync(join(dir, file), "utf8"));
+function loadTheme(file: string, dir: string = themeDir): PiTheme {
+	return JSON.parse(readFileSync(join(dir, file), "utf8")) as PiTheme;
 }
 
-function getUpstreamColorValues(source) {
+function loadVsCodeTheme(file: string, dir: string): VsCodeTheme {
+	return JSON.parse(readFileSync(join(dir, file), "utf8")) as VsCodeTheme;
+}
+
+function getUpstreamColorValues(source: VsCodeTheme): Set<string> {
 	const colors = new Set(Object.values(source.colors ?? {}));
 	const tokenForegrounds = new Set(
 		(source.tokenColors ?? [])
 			.map((entry) => entry?.settings?.foreground)
-			.filter((value) => typeof value === "string" && value.length > 0),
+			.filter((value): value is string => typeof value === "string" && value.length > 0),
 	);
 
 	return new Set([...colors, ...tokenForegrounds]);
 }
 
 describe("Pi theme schema and mapping validation", () => {
-	let validate;
+	let validate!: ValidateFunction;
 
 	beforeAll(async () => {
 		const schema = await loadSchema();
@@ -88,7 +104,7 @@ describe("Pi theme schema and mapping validation", () => {
 
 	test.each(testCases)("$file resolves only to upstream source colors or token foregrounds", ({ file, sourceFile }) => {
 		const generated = loadTheme(file);
-		const source = loadTheme(sourceFile, sourceThemeDir);
+		const source = loadVsCodeTheme(sourceFile, sourceThemeDir);
 		const allowedValues = getUpstreamColorValues(source);
 		const generatedVarValues = new Set(Object.values(generated.vars));
 
@@ -104,13 +120,13 @@ describe("Pi theme schema and mapping validation", () => {
 });
 
 describe("White palette extraction", () => {
-	const sourceWhiteJson = JSON.parse(readFileSync(whiteSourcePath, "utf8"));
+	const sourceWhiteJson = JSON.parse(readFileSync(whiteSourcePath, "utf8")) as VsCodeTheme;
 
 	test("each palette key maps to the correct upstream white JSON token value", () => {
 		const palette = extractWhitePalette(whiteSourcePath);
 		for (const [key, token] of Object.entries(CANONICAL_MAPPING)) {
 			expect(palette[key], `palette key "${key}" should equal colors["${token}"]`).toBe(
-				sourceWhiteJson.colors[token],
+				sourceWhiteJson.colors?.[token],
 			);
 		}
 	});
