@@ -1,7 +1,9 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, test } from "vitest";
-import { extractWhitePalette } from "../src/extract-white-palette.js";
-import { HEX_ALPHA_REGEX, HEX_REGEX, normaliseHex, normalisePalette } from "../src/hex-utils.js";
+import { extractWhitePalette } from "../src/palette-extractor.js";
+import { HEX_ALPHA_REGEX, HEX_REGEX, normaliseHex, normalisePalette } from "../src/hex.js";
+import { buildTheme, type BuildThemeInput } from "../src/theme-builder.js";
+import { type Palette } from "../src/palette.js";
 import { whiteSourcePath, type VsCodeTheme } from "./theme-test-helpers.js";
 
 describe("White palette extraction", () => {
@@ -100,5 +102,64 @@ describe("normalisePalette", () => {
 
 	test("throws and identifies the offending key", () => {
 		expect(() => normalisePalette({ good: "#1b1e28", bad: "not-a-colour" })).toThrow('invalid value for key "bad"');
+	});
+});
+
+describe("buildTheme", () => {
+	const FIXTURE_PALETTE: Palette = {
+		bg: "#1b1e28",
+		focus: "#303340",
+		gray: "#a6accd",
+		darkerGray: "#767c9d",
+		bluishGray: "#506477",
+		bluishGrayBrighter: "#7390aa",
+		offWhite: "#e4f0fb",
+		selection: "#717cb425",
+		black: "#000000",
+		white: "#ffffff",
+		lightBlue: "#add7ff",
+		lowerBlue: "#89ddff",
+		desaturatedBlue: "#91b4d5",
+		brightMint: "#5de4c7",
+		lowerMint: "#5fb3a1",
+		hotRed: "#d0679d",
+		pink: "#f087bd",
+		brightYellow: "#fffac2",
+		transparent: "#00000000",
+		blueishGreen: "#42675a",
+	};
+
+	const INPUT: BuildThemeInput = { name: "fixture", palette: FIXTURE_PALETTE };
+
+	test("returns a PiThemeOutput with the given name and a https schema URL", () => {
+		const result = buildTheme(INPUT);
+		expect(result.name).toBe("fixture");
+		expect(result.$schema).toMatch(/^https:\/\//u);
+	});
+
+	test("syntaxOperator is emitted as the raw hex literal #ff0000", () => {
+		const result = buildTheme(INPUT);
+		expect(result.colors.syntaxOperator).toBe("#ff0000");
+	});
+
+	test("all vars are normalised to 6-digit hex", () => {
+		const result = buildTheme(INPUT);
+		for (const [key, value] of Object.entries(result.vars)) {
+			expect(HEX_REGEX.test(value), `vars.${key} = "${value}" should be 6-digit hex`).toBe(true);
+		}
+	});
+
+	test("all non-empty, non-literal color values reference a declared var", () => {
+		const result = buildTheme(INPUT);
+		const vars = new Set(Object.keys(result.vars));
+		for (const [key, value] of Object.entries(result.colors)) {
+			if (value === "" || HEX_REGEX.test(value)) continue;
+			expect(vars.has(value), `colors.${key} = "${value}" is not declared in vars`).toBe(true);
+		}
+	});
+
+	test("export contains pageBg, cardBg, and infoBg", () => {
+		const result = buildTheme(INPUT);
+		expect(result.export).toMatchObject({ pageBg: expect.any(String), cardBg: expect.any(String), infoBg: expect.any(String) });
 	});
 });

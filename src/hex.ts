@@ -22,7 +22,7 @@ export function normaliseHex(hex: string): string {
  * Applies normaliseHex to every value in a palette record.
  * Throws if any value is not a valid hex colour.
  */
-export function normalisePalette(palette: Record<string, string>): Record<string, string> {
+export function normalisePalette<T extends Record<string, string>>(palette: T): T {
 	return Object.fromEntries(
 		Object.entries(palette).map(([key, value]) => {
 			try {
@@ -31,7 +31,7 @@ export function normalisePalette(palette: Record<string, string>): Record<string
 				throw new Error(`normalisePalette: invalid value for key "${key}": ${value}`);
 			}
 		}),
-	);
+	) as T;
 }
 
 /**

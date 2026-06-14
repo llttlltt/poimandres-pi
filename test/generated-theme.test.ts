@@ -1,6 +1,6 @@
 import Ajv, { ValidateFunction } from "ajv";
 import { beforeAll, describe, expect, test } from "vitest";
-import { HEX_REGEX } from "../src/hex-utils.js";
+import { HEX_REGEX } from "../src/hex.js";
 import {
 	getUpstreamColorValues,
 	loadSchema,

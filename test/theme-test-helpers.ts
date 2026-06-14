@@ -1,6 +1,6 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
-import { HEX_ALPHA_REGEX } from "../src/hex-utils";
+import { HEX_ALPHA_REGEX } from "../src/hex";
 
 export interface PiTheme {
 	$schema: string;

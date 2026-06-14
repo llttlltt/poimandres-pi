@@ -11,7 +11,6 @@
 ## Current Conventions
 
 - `build` is the primary command for regeneration and runs `pnpm clean:themes` before `node --import tsx src/generate-pi-theme.ts`.
-- `generate:source-assignments` regenerates `src/generated-source-theme-assignments.ts` from the upstream source theme assignments.
 - `prebuild` is the source-validation gate: `pnpm check && pnpm test && pnpm clean:themes`.
 - `scripts/precommit.sh` is the repo-local guardrail: it runs `pnpm build` and `pnpm test:generated` before commit.
 - Do not generate `white-noitalics`; the upstream white and white-noitalics colors are identical.
@@ -19,9 +18,9 @@
 - The white palette is extracted from the upstream JSON by `src/extract-white-palette.ts`. Do not re-introduce hard-coded white colour values in `src/generate-pi-theme.ts`.
 - Palette values are normalised through `src/hex-utils.ts`; generated theme vars should be 6-digit hex values only.
 - `syntaxOperator` is intentionally emitted as the raw hex literal `#ff0000`.
-- Keep shared palette shape/types in `src/types.ts`.
+- Keep shared palette shape/types in `src/palette.ts`.
 - When white tokenColor `foreground` values reference `${colors.X}`, the extractor should resolve the reference and ignore non-color settings like `fontStyle`.
-- When adding or changing generated source-theme assignment logic, regenerate `src/generated-source-theme-assignments.ts` rather than editing it by hand.
+- Theme-building logic lives in `src/theme-builder.ts` (`buildTheme`, `PiThemeOutput`). `src/generate-pi-theme.ts` is a thin I/O runner only.
 
 ## Documentation Hygiene
 

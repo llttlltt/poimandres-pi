@@ -7,7 +7,6 @@
 		"clean:themes": "rm -rf themes && mkdir -p themes",
 		"prebuild": "pnpm check && pnpm test && pnpm clean:themes",
 		"build": "node --import tsx src/generate-pi-theme.ts",
-		"generate:source-assignments": "node --import tsx src/generate-source-token-assignments.ts",
 		"check": "tsc --noEmit",
 		"test": "vitest run test/pi-theme-schema.test.ts",
 		"test:generated": "vitest run test/generated-theme.test.ts"

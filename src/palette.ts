@@ -23,4 +23,3 @@ export const PALETTE_KEYS = [
 
 export type PaletteKey = (typeof PALETTE_KEYS)[number];
 export type Palette = Record<PaletteKey, string>;
-export type PaletteWithoutBlueishGreen = Exclude<PaletteKey, "blueishGreen">;

@@ -1,5 +1,7 @@
 import { readFileSync } from "node:fs";
-import { type Palette, type PaletteKey, type PaletteWithoutBlueishGreen } from "./types.js";
+import { type Palette, type PaletteKey } from "./palette.js";
+
+type PaletteWithoutBlueishGreen = Exclude<PaletteKey, "blueishGreen">;
 
 const BLUEISH_GREEN_SCOPE = "source.sass keyword.control";
 const COLOR_REFERENCE_REGEX = /^\$\{colors\.([A-Za-z0-9]+)\}$/;
