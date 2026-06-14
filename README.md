@@ -1,5 +1,5 @@
 <div align="center">
-  <img width="200px" src="./drcmda/poimandres-theme/assets/dots.png" alt="Dots" />
+  <img width="200px" src="./poimandres-theme/assets/dots.png" alt="Dots" />
   <h1>poimandres-pi 🎨</h1>
 </div>
 
@@ -13,19 +13,18 @@
   <a href="https://github.com/earendil-works/pi/tree/main">Pi Coding Agent</a> theme based on the <a href="https://github.com/drcmda/poimandres-theme">Poimandres VSCode theme</a>.
 </p>
 
-## Screenshots
-
-### Poimandres
-
-![Poimandres Theme](./screenshots/poimandres.png)
-
-### Storm
-
-![Storm Theme](./screenshots/storm.png)
-
-### White
-
-![White Theme](./screenshots/white.png)
+<table>
+  <tr>
+    <td align="center"><strong>poimandres</strong></td>
+    <td align="center"><strong>poimandres storm</strong></td>
+    <td align="center"><strong>poimandres white</strong></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="./assets/poimandres.png" alt="Poimandres Theme" width="260" /></td>
+    <td align="center"><img src="./assets/poimandres-storm.png" alt="Storm Theme" width="260" /></td>
+    <td align="center"><img src="./assets/poimandres-white.png" alt="White Theme" width="260" /></td>
+  </tr>
+</table>
 
 ## Installation
 
@@ -51,7 +50,7 @@ pi -e npm:poimandres-pi
 
 ## Development
 
-The theme files in `themes/pi/` are generated from the upstream [poimandres-theme](https://github.com/drcmda/poimandres-theme) VS Code source, which is included as a submodule.
+The theme files in `themes/pi/` are generated from the upstream [poimandres-theme](https://github.com/drcmda/poimandres-theme) VS Code source, which is included as a git submodule at `poimandres-theme/`.
 
 ### Setup
 
@@ -63,12 +62,12 @@ pnpm install
 
 ### Commands
 
-| Purpose | Command |
+| Command | Purpose |
 |---|---|
-| Regenerate themes | `pnpm build` |
-| Type-check | `pnpm check` |
-| Unit & extraction tests | `pnpm test` |
-| Generated-artifact tests | `pnpm test:generated` |
+| `pnpm build` | Regenerate themes (runs type-check, unit tests, and clean as a prebuild step) |
+| `pnpm check` | Type-check |
+| `pnpm test` | Unit & extraction tests |
+| `pnpm test:generated` | Generated-artifact tests |
 
 ## 🙌 Related
 

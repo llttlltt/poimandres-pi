@@ -10,18 +10,18 @@ Extracts colour values from the upstream Poimandres VSCode theme submodule and g
 
 ## Commands
 
-| Purpose | Command |
+| Command | Purpose |
 |---|---|
-| Regenerate themes | `pnpm build` |
-| Type-check | `pnpm check` |
-| Unit & extraction tests | `pnpm test` |
-| Generated-artifact tests | `pnpm test:generated` |
+| `pnpm build` | Regenerate themes (runs type-check, unit tests, and clean as a prebuild step) |
+| `pnpm check` | Type-check |
+| `pnpm test` | Unit & extraction tests |
+| `pnpm test:generated` | Generated-artifact tests |
 
 The git pre-commit hook runs `pnpm build && pnpm test:generated` via `scripts/precommit.sh`.
 
 ## Hard Constraints
 
-- `drcmda/poimandres-theme/` is a read-only git submodule. Never modify files inside it.
+- `poimandres-theme/` is a read-only git submodule. Never modify files inside it.
 - Generated outputs go in `themes/pi/` only.
 
 ## Further Reading

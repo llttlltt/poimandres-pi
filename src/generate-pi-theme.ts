@@ -1,6 +1,6 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
-import { base as BASE_THEME, storm as STORM_THEME } from "../drcmda/poimandres-theme/src/theme.js";
+import { base as BASE_THEME, storm as STORM_THEME } from "../poimandres-theme/src/theme.js";
 import { extractWhitePalette } from "./palette-extractor.js";
 import { buildTheme, type PiThemeOutput } from "./theme-builder.js";
 
@@ -21,7 +21,7 @@ const themes: Array<{ file: string; data: PiThemeOutput }> = [
 		data: buildTheme({
 			name: "poimandres white",
 			palette: extractWhitePalette(
-				resolve(process.cwd(), "drcmda/poimandres-theme/themes/poimandres-color-theme-white.json"),
+				resolve(process.cwd(), "poimandres-theme/themes/poimandres-color-theme-white.json"),
 			),
 		}),
 	},

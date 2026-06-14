@@ -8,8 +8,8 @@ export type { PiThemeOutput as PiTheme };
 export type { VsCodeTheme };
 export const schemaPath = resolve(".cache/pi-theme-schema.json");
 export const themeDir = resolve("themes/pi");
-export const sourceThemeDir = resolve("drcmda/poimandres-theme/themes");
-export const whiteSourcePath = resolve("drcmda/poimandres-theme/themes/poimandres-color-theme-white.json");
+export const sourceThemeDir = resolve("poimandres-theme/themes");
+export const whiteSourcePath = resolve("poimandres-theme/themes/poimandres-color-theme-white.json");
 
 export const themeFiles = ["poimandres.json", "poimandres-storm.json", "poimandres-white.json"] as const;
 
