@@ -33,7 +33,3 @@ export function normalisePalette<T extends Record<string, string>>(palette: T): 
 		}),
 	) as T;
 }
-
-/**
- * Marks a raw hex literal that should be emitted as-is in theme colors.
- */

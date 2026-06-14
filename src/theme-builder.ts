@@ -1,7 +1,7 @@
 import { type Palette } from "./palette.js";
 import { normalisePalette } from "./hex.js";
 
-const SCHEMA_URL =
+export const SCHEMA_URL =
 	"https://raw.githubusercontent.com/earendil-works/pi/main/packages/coding-agent/src/modes/interactive/theme/theme-schema.json";
 
 export interface PiThemeOutput {

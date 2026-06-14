@@ -1,25 +1,11 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { HEX_ALPHA_REGEX } from "../src/hex";
+import { SCHEMA_URL, type PiThemeOutput } from "../src/theme-builder.js";
+import { type VsCodeTheme } from "../src/palette-extractor.js";
 
-export interface PiTheme {
-	$schema: string;
-	name: string;
-	vars: Record<string, string>;
-	colors: Record<string, string>;
-	export: Record<string, string>;
-}
-
-export interface VsCodeTheme {
-	colors?: Record<string, string>;
-	tokenColors?: Array<{
-		scope?: string | string[];
-		settings?: { foreground?: string };
-	}>;
-}
-
-export const schemaUrl =
-	"https://raw.githubusercontent.com/earendil-works/pi/main/packages/coding-agent/src/modes/interactive/theme/theme-schema.json";
+export type { PiThemeOutput as PiTheme };
+export type { VsCodeTheme };
 export const schemaPath = resolve(".cache/pi-theme-schema.json");
 export const themeDir = resolve("themes/pi");
 export const sourceThemeDir = resolve("drcmda/poimandres-theme/themes");
@@ -40,9 +26,9 @@ export const testCases = themeFiles.map((file) => ({
 
 export async function loadSchema(): Promise<Record<string, unknown>> {
 	if (!existsSync(schemaPath)) {
-		const response = await fetch(schemaUrl);
+		const response = await fetch(SCHEMA_URL);
 		if (!response.ok) {
-			throw new Error(`Failed to fetch schema from ${schemaUrl}`);
+			throw new Error(`Failed to fetch schema from ${SCHEMA_URL}`);
 		}
 		const schema = await response.text();
 		mkdirSync(dirname(schemaPath), { recursive: true });
@@ -52,8 +38,8 @@ export async function loadSchema(): Promise<Record<string, unknown>> {
 	return JSON.parse(readFileSync(schemaPath, "utf8")) as Record<string, unknown>;
 }
 
-export function loadTheme(file: string, dir: string = themeDir): PiTheme {
-	return JSON.parse(readFileSync(join(dir, file), "utf8")) as PiTheme;
+export function loadTheme(file: string, dir: string = themeDir): PiThemeOutput {
+	return JSON.parse(readFileSync(join(dir, file), "utf8")) as PiThemeOutput;
 }
 
 export function loadVsCodeTheme(file: string, dir: string): VsCodeTheme {

@@ -6,7 +6,7 @@ type PaletteWithoutBlueishGreen = Exclude<PaletteKey, "blueishGreen">;
 const BLUEISH_GREEN_SCOPE = "source.sass keyword.control";
 const COLOR_REFERENCE_REGEX = /^\$\{colors\.([A-Za-z0-9]+)\}$/;
 
-type UpstreamTheme = {
+export type VsCodeTheme = {
 	colors?: Record<string, string>;
 	tokenColors?: Array<{
 		scope?: string | string[];
@@ -14,7 +14,7 @@ type UpstreamTheme = {
 	}>;
 };
 
-export const SOURCE_TOKEN_BY_KEY: Record<PaletteWithoutBlueishGreen, string> = {
+const SOURCE_TOKEN_BY_KEY: Record<PaletteWithoutBlueishGreen, string> = {
 	bg: "editor.background",
 	focus: "activityBarBadge.background",
 	gray: "editor.foreground",
@@ -36,11 +36,7 @@ export const SOURCE_TOKEN_BY_KEY: Record<PaletteWithoutBlueishGreen, string> = {
 	transparent: "focusBorder",
 };
 
-function resolveSourceToken(key: Exclude<PaletteKey, "blueishGreen">): string {
-	return SOURCE_TOKEN_BY_KEY[key];
-}
-
-function resolveTokenReference(source: UpstreamTheme, reference: string, key: string): string {
+function resolveTokenReference(source: VsCodeTheme, reference: string, key: string): string {
 	const match = reference.match(COLOR_REFERENCE_REGEX);
 	if (match) {
 		const resolved = source.colors?.[match[1]];
@@ -54,7 +50,7 @@ function resolveTokenReference(source: UpstreamTheme, reference: string, key: st
 	return reference;
 }
 
-function extractTokenColor(source: UpstreamTheme, token: string, key: string): string {
+function extractTokenColor(source: VsCodeTheme, token: string, key: string): string {
 	const value = source.colors?.[token];
 	if (value === undefined) {
 		throw new Error(
@@ -64,7 +60,7 @@ function extractTokenColor(source: UpstreamTheme, token: string, key: string): s
 	return resolveTokenReference(source, value, key);
 }
 
-function extractTokenColorFromScope(source: UpstreamTheme, scopeQuery: string, key: string): string {
+function extractTokenColorFromScope(source: VsCodeTheme, scopeQuery: string, key: string): string {
 	const tokenEntry = (source.tokenColors ?? []).find((entry) => {
 		const scope = entry.scope;
 		return (Array.isArray(scope) ? scope : [scope]).includes(scopeQuery);
@@ -79,11 +75,11 @@ function extractTokenColorFromScope(source: UpstreamTheme, scopeQuery: string, k
 }
 
 export function extractWhitePalette(whiteJsonPath: string): Palette {
-	const source = JSON.parse(readFileSync(whiteJsonPath, "utf8")) as UpstreamTheme;
+	const source = JSON.parse(readFileSync(whiteJsonPath, "utf8")) as VsCodeTheme;
 	const palette = {} as Palette;
 
 	for (const key of Object.keys(SOURCE_TOKEN_BY_KEY) as Array<Exclude<PaletteKey, "blueishGreen">>) {
-		palette[key] = extractTokenColor(source, resolveSourceToken(key), key);
+		palette[key] = extractTokenColor(source, SOURCE_TOKEN_BY_KEY[key], key);
 	}
 
 	palette.blueishGreen = extractTokenColorFromScope(source, BLUEISH_GREEN_SCOPE, "blueishGreen");
