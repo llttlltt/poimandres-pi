@@ -1,3 +1,6 @@
+export const HEX_REGEX = /^#[0-9a-fA-F]{6}$/;
+export const HEX_ALPHA_REGEX = /^#[0-9a-fA-F]{8}$/;
+
 /**
  * Normalises a hex colour string to 6-digit format (#RRGGBB).
  *
@@ -6,10 +9,10 @@
  * - Anything else             → throws
  */
 export function normaliseHex(hex: string): string {
-	if (/^#[0-9a-fA-F]{6}$/.test(hex)) {
+	if (HEX_REGEX.test(hex)) {
 		return hex;
 	}
-	if (/^#[0-9a-fA-F]{8}$/.test(hex)) {
+	if (HEX_ALPHA_REGEX.test(hex)) {
 		return hex.slice(0, 7);
 	}
 	throw new Error(`normaliseHex: invalid hex colour "${hex}" — expected #RRGGBB or #RRGGBBAA`);
@@ -30,3 +33,7 @@ export function normalisePalette(palette: Record<string, string>): Record<string
 		}),
 	);
 }
+
+/**
+ * Marks a raw hex literal that should be emitted as-is in theme colors.
+ */

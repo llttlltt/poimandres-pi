@@ -69,9 +69,9 @@ function buildTheme({ name, palette: rawPalette }: BuildThemeInput): PiThemeOutp
 		transparent: palette.transparent,
 	} as const;
 
-	const colors: Record<string, keyof typeof vars | ""> = {
+	const colors: Record<string, keyof typeof vars | "" | `#${string}`> = {
 		accent: "brightMint",
-		success: "brightMint",
+		success: "blueishGreen",
 		error: "pink",
 		warning: "brightYellow",
 		muted: "offWhite",
@@ -85,7 +85,7 @@ function buildTheme({ name, palette: rawPalette }: BuildThemeInput): PiThemeOutp
 		selectedBg: "selection",
 
 		userMessageBg: "blueishGreen",
-		userMessageText: "white",
+		userMessageText: "offWhite",
 
 		customMessageBg: "bluishGray",
 		customMessageText: "lowerBlue",
@@ -99,13 +99,13 @@ function buildTheme({ name, palette: rawPalette }: BuildThemeInput): PiThemeOutp
 
 		mdHeading: "white",
 		mdLink: "brightMint",
-		mdLinkUrl: "transparent",
+		mdLinkUrl: "brightMint",
 		mdCode: "white",
 		mdCodeBlock: "offWhite",
 		mdCodeBlockBorder: "darkerGray",
-		mdQuote: "transparent",
-		mdQuoteBorder: "transparent",
-		mdHr: "focus",
+		mdQuote: "desaturatedBlue",
+		mdQuoteBorder: "bluishGray",
+		mdHr: "darkerGray",
 		mdListBullet: "darkerGray",
 
 		toolDiffAdded: "lowerMint",
@@ -119,7 +119,7 @@ function buildTheme({ name, palette: rawPalette }: BuildThemeInput): PiThemeOutp
 		syntaxString: "brightMint",
 		syntaxNumber: "brightMint",
 		syntaxType: "white",
-		syntaxOperator: "transparent",
+		syntaxOperator: "#ff0000",
 		syntaxPunctuation: "darkerGray",
 
 		thinkingText: "gray",

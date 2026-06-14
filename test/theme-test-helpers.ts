@@ -1,5 +1,6 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
+import { HEX_ALPHA_REGEX } from "../src/hex-utils";
 
 export interface PiTheme {
 	$schema: string;
@@ -66,7 +67,7 @@ export function getUpstreamColorValues(source: VsCodeTheme): Set<string> {
 			.map((entry) => entry?.settings?.foreground)
 			.filter((value): value is string => typeof value === "string" && value.length > 0),
 	];
-	const normalisedVariants = rawValues.filter((v) => /^#[0-9a-fA-F]{8}$/.test(v)).map((v) => v.slice(0, 7));
+	const normalisedVariants = rawValues.filter((v) => HEX_ALPHA_REGEX.test(v)).map((v) => v.slice(0, 7));
 
 	return new Set([...rawValues, ...normalisedVariants]);
 }

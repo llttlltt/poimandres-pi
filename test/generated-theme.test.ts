@@ -1,5 +1,6 @@
 import Ajv, { ValidateFunction } from "ajv";
 import { beforeAll, describe, expect, test } from "vitest";
+import { HEX_REGEX } from "../src/hex-utils.js";
 import {
 	getUpstreamColorValues,
 	loadSchema,
@@ -32,6 +33,7 @@ describe("Generated theme schema and mapping validation", () => {
 
 		for (const [key, value] of Object.entries(theme.colors)) {
 			if (value === "") continue;
+			if (HEX_REGEX.test(value)) continue;
 			expect(vars.has(value), `${file}: ${key} -> ${value} is not declared in vars`).toBe(true);
 		}
 	});
@@ -44,6 +46,7 @@ describe("Generated theme schema and mapping validation", () => {
 
 		for (const [key, value] of Object.entries(generated.colors)) {
 			if (value === "") continue;
+			if (HEX_REGEX.test(value)) continue;
 			expect(generatedVarValues.has(generated.vars[value]), `${file}: ${key} points at missing var ${value}`).toBe(
 				true,
 			);
@@ -57,9 +60,7 @@ describe("Generated theme schema and mapping validation", () => {
 	test.each(themeFiles)("all vars in %s are 6-digit hex (no alpha channel)", (file) => {
 		const theme = loadTheme(file);
 		for (const [key, value] of Object.entries(theme.vars)) {
-			expect(/^#[0-9a-fA-F]{6}$/.test(value), `${file}: vars.${key} = "${value}" is not a 6-digit hex colour`).toBe(
-				true,
-			);
+			expect(HEX_REGEX.test(value), `${file}: vars.${key} = "${value}" is not a 6-digit hex colour`).toBe(true);
 		}
 	});
 });

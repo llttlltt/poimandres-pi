@@ -1,14 +1,22 @@
-import { readFileSync } from "fs";
+import { readFileSync } from "node:fs";
+import { type Palette, type PaletteKey, type PaletteWithoutBlueishGreen } from "./types.js";
 
-/**
- * Canonical mapping from palette key → VS Code `colors` token in the upstream white JSON.
- * Derived from drcmda/poimandres-theme/src/theme.js template.
- */
-export const CANONICAL_MAPPING: Record<string, string> = {
-	bg: "terminal.ansiBlack",
+const BLUEISH_GREEN_SCOPE = "source.sass keyword.control";
+const COLOR_REFERENCE_REGEX = /^\$\{colors\.([A-Za-z0-9]+)\}$/;
+
+type UpstreamTheme = {
+	colors?: Record<string, string>;
+	tokenColors?: Array<{
+		scope?: string | string[];
+		settings?: { foreground?: string };
+	}>;
+};
+
+export const SOURCE_TOKEN_BY_KEY: Record<PaletteWithoutBlueishGreen, string> = {
+	bg: "editor.background",
 	focus: "activityBarBadge.background",
-	gray: "terminal.ansiBrightBlack",
-	darkerGray: "sideBar.foreground",
+	gray: "editor.foreground",
+	darkerGray: "editorLineNumber.foreground",
 	bluishGray: "inputValidation.infoBackground",
 	bluishGrayBrighter: "debugIcon.breakpointDisabledForeground",
 	offWhite: "activityBarBadge.foreground",
@@ -26,51 +34,57 @@ export const CANONICAL_MAPPING: Record<string, string> = {
 	transparent: "focusBorder",
 };
 
-const BLUEISH_GREEN_SCOPE = "source.sass keyword.control";
-
-interface UpstreamWhiteJson {
-	colors?: Record<string, string>;
-	tokenColors?: Array<{
-		scope?: string | string[];
-		settings?: { foreground?: string };
-	}>;
+function resolveSourceToken(key: Exclude<PaletteKey, "blueishGreen">): string {
+	return SOURCE_TOKEN_BY_KEY[key];
 }
 
-/**
- * Extract the 21-key white palette from the upstream white JSON file.
- *
- * @param whiteJsonPath - Absolute path to poimandres-color-theme-white.json
- * @returns Palette object with 21 keys
- */
-export function extractWhitePalette(whiteJsonPath: string): Record<string, string> {
-	const source = JSON.parse(readFileSync(whiteJsonPath, "utf8")) as UpstreamWhiteJson;
-	const palette: Record<string, string> = {};
-
-	// Extract the 20 direct `colors` token mappings
-	for (const [key, token] of Object.entries(CANONICAL_MAPPING)) {
-		const value = source.colors?.[token];
-		if (value === undefined) {
+function resolveTokenReference(source: UpstreamTheme, reference: string, key: string): string {
+	const match = reference.match(COLOR_REFERENCE_REGEX);
+	if (match) {
+		const resolved = source.colors?.[match[1]];
+		if (resolved === undefined) {
 			throw new Error(
-				`extractWhitePalette: palette key "${key}" could not be resolved — ` +
-					`expected token "${token}" was not found in the upstream white JSON colors.`,
+				`extractWhitePalette: palette key "${key}" could not be resolved — referenced color "${match[1]}" was not found in the upstream white JSON colors.`,
 			);
 		}
-		palette[key] = value;
+		return resolved;
 	}
+	return reference;
+}
 
-	// Extract blueishGreen from tokenColors by scope
-	const tokenEntry = (source.tokenColors ?? []).find((entry) => {
-		const scope = entry.scope;
-		return (Array.isArray(scope) ? scope : [scope]).includes(BLUEISH_GREEN_SCOPE);
-	});
-	const blueishGreen = tokenEntry?.settings?.foreground;
-	if (blueishGreen === undefined) {
+function extractTokenColor(source: UpstreamTheme, token: string, key: string): string {
+	const value = source.colors?.[token];
+	if (value === undefined) {
 		throw new Error(
-			`extractWhitePalette: palette key "blueishGreen" could not be resolved — ` +
-				`no tokenColors entry with scope "${BLUEISH_GREEN_SCOPE}" found in the upstream white JSON.`,
+			`extractWhitePalette: palette key "${key}" could not be resolved — expected token "${token}" was not found in the upstream white JSON colors.`,
 		);
 	}
-	palette.blueishGreen = blueishGreen;
+	return resolveTokenReference(source, value, key);
+}
+
+function extractTokenColorFromScope(source: UpstreamTheme, scopeQuery: string, key: string): string {
+	const tokenEntry = (source.tokenColors ?? []).find((entry) => {
+		const scope = entry.scope;
+		return (Array.isArray(scope) ? scope : [scope]).includes(scopeQuery);
+	});
+	const foreground = tokenEntry?.settings?.foreground;
+	if (foreground === undefined) {
+		throw new Error(
+			`extractWhitePalette: palette key "${key}" could not be resolved — no tokenColors entry with scope "${scopeQuery}" found in the upstream white JSON.`,
+		);
+	}
+	return resolveTokenReference(source, foreground, key);
+}
+
+export function extractWhitePalette(whiteJsonPath: string): Palette {
+	const source = JSON.parse(readFileSync(whiteJsonPath, "utf8")) as UpstreamTheme;
+	const palette = {} as Palette;
+
+	for (const key of Object.keys(SOURCE_TOKEN_BY_KEY) as Array<Exclude<PaletteKey, "blueishGreen">>) {
+		palette[key] = extractTokenColor(source, resolveSourceToken(key), key);
+	}
+
+	palette.blueishGreen = extractTokenColorFromScope(source, BLUEISH_GREEN_SCOPE, "blueishGreen");
 
 	return palette;
 }

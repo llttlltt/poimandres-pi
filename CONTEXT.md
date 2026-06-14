@@ -1,31 +1,39 @@
 # Project Context
 
 ## Purpose
+
 Generate Pi coding-agent theme JSON outputs from the upstream Poimandres theme submodule.
 
 ## Current State
+
 - Root generator: `src/generate-pi-theme.ts` (ESM).
-- White palette extracted at build time by `src/extract-white-palette.ts` via `extractWhitePalette(path)`. No hard-coded white colours remain in the generator.
-- Palette values are normalised through `src/hex-utils.ts` so theme vars are written as 6-digit hex values (`#RRGGBB`); alpha-bearing upstream values such as selection are stripped before output.
+- White palette extraction lives in `src/extract-white-palette.ts` and consumes the same palette shape as the dark variants.
+- Shared palette types are centralised in `src/types.ts` (`PaletteKey`, `Palette`, `PaletteWithoutBlueishGreen`).
+- Upstream source-theme assignments are generated into `src/generated-source-theme-assignments.ts` by `src/generate-source-token-assignments.ts`.
+- White tokenColor references such as `${colors.blueishGreen}` are resolved by the extractor; `fontStyle` is ignored.
+- Palette values are normalised through `src/hex-utils.ts` so theme vars are written as 6-digit hex values (`#RRGGBB`); alpha-bearing upstream values are stripped before output.
+- Generated JSON is tab-indented via `JSON.stringify(..., "\t")`.
 - Outputs written to `themes/pi/`:
   - `poimandres.json`, `poimandres-storm.json`, `poimandres-white.json`
-- Generated JSON is tab-indented via `JSON.stringify(..., "\t")`.
 - Upstream source: git submodule at `drcmda/poimandres-theme` (read-only).
 
 ## Validation (`test/pi-theme-schema.test.ts`)
-Four main checks now cover generation and extraction:
-1. **Pi theme schema and mapping validation** — schema conformance, declared-vars check, and upstream-colour fidelity for the three generated themes.
-2. **White palette extraction** — pins each `CANONICAL_MAPPING` entry to its upstream token; regression guards for `bluishGray` (`#506477`) and `selection` (`#717cb425`).
-3. **normaliseHex / normalisePalette** — unit tests for 6-digit pass-through, 8-digit alpha stripping, and invalid input handling.
-4. **Generated theme vars hex validity** — asserts every generated theme var is 6-digit hex.
-5. **Cross-variant palette consistency** — currently only checks shared vars that are intentionally identical across dark and white variants.
+
+Current checks cover the source/extraction path and the generated artifacts separately:
+
+1. **Source-level extraction checks** — `White palette extraction`, `normaliseHex`, and `normalisePalette`.
+2. **Generated theme validation** — `test/generated-theme.test.ts` covers schema conformance, declared-vars check, upstream-colour fidelity, and 6-digit hex validation for the generated themes.
 
 ## Build Flow
-- `pnpm build` — regenerates themes with Node `--import tsx`.
-- `pnpm generate:pi-theme` — alias for `pnpm build`.
-- `scripts/precommit.sh` — runs `pnpm check`, `pnpm test`, and `pnpm build` before commit.
+
+- `pnpm build` — regenerates themes with `pnpm clean:themes` and Node `--import tsx`.
+- `pnpm generate:source-assignments` — regenerates `src/generated-source-theme-assignments.ts` from upstream source theme assignments.
+- `pnpm prebuild` — runs `pnpm check && pnpm test && pnpm clean:themes` before build.
+- `scripts/precommit.sh` — runs `pnpm build` and `pnpm test:generated` before commit.
 
 ## Notes
+
 - `export` is emitted as a small mapping, not an empty object.
-- The current generator uses `selection: palette.selection` and normalises it to `#717cb4` / `#818cc4` in the generated outputs.
+- `syntaxOperator` is intentionally emitted as the raw hex literal `#ff0000`.
 - Most accent colours differ intentionally between dark and white variants.
+- White-specific source literals should not be pinned in tests; prefer contract checks against the upstream source relationships.
