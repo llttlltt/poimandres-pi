@@ -1,11 +1,6 @@
 import { mkdirSync, writeFileSync } from "fs";
 import { join, resolve } from "path";
-import {
-	base as BASE_THEME,
-	noitalics as NOITALICS_THEME,
-	stormNoitalics as STORM_NOITALICS_THEME,
-	storm as STORM_THEME,
-} from "../drcmda/poimandres-theme/src/theme.js";
+import { base as BASE_THEME, storm as STORM_THEME } from "../drcmda/poimandres-theme/src/theme.js";
 import { extractWhitePalette } from "./extract-white-palette.js";
 import { normalisePalette } from "./hex-utils.js";
 
@@ -39,9 +34,7 @@ function paletteFromTheme(theme: unknown): Record<string, string> {
 }
 
 const baseColors = paletteFromTheme(BASE_THEME);
-const noitalicsColors = paletteFromTheme(NOITALICS_THEME);
 const stormColors = paletteFromTheme(STORM_THEME);
-const stormNoitalicsColors = paletteFromTheme(STORM_NOITALICS_THEME);
 const whiteColors = extractWhitePalette(
 	resolve(process.cwd(), "drcmda/poimandres-theme/themes/poimandres-color-theme-white.json"),
 );
@@ -78,54 +71,58 @@ function buildTheme({ name, palette: rawPalette }: BuildThemeInput): PiThemeOutp
 
 	const colors: Record<string, keyof typeof vars | ""> = {
 		accent: "brightMint",
-		border: "focus",
-		borderAccent: "brightMint",
-		borderMuted: "lowerBlue",
 		success: "brightMint",
-		error: "hotRed",
+		error: "pink",
 		warning: "brightYellow",
 		muted: "offWhite",
 		dim: "gray",
 		text: "",
-		thinkingText: "desaturatedBlue",
+
+		border: "focus",
+		borderAccent: "brightMint",
+		borderMuted: "offWhite",
 
 		selectedBg: "selection",
-		userMessageBg: "bg",
-		userMessageText: "",
-		customMessageBg: "bg",
-		customMessageText: "",
-		customMessageLabel: "lightBlue",
+
+		userMessageBg: "blueishGreen",
+		userMessageText: "white",
+
+		customMessageBg: "bluishGray",
+		customMessageText: "lowerBlue",
+		customMessageLabel: "white",
+
 		toolPendingBg: "bg",
 		toolSuccessBg: "focus",
 		toolErrorBg: "hotRed",
-		toolTitle: "brightMint",
+		toolTitle: "white",
 		toolOutput: "offWhite",
 
 		mdHeading: "white",
-		mdLink: "lowerBlue",
-		mdLinkUrl: "lowerBlue",
-		mdCode: "lowerBlue",
-		mdCodeBlock: "desaturatedBlue",
-		mdCodeBlockBorder: "bluishGray",
-		mdQuote: "lowerBlue",
-		mdQuoteBorder: "lowerBlue",
-		mdHr: "darkerGray",
-		mdListBullet: "lowerBlue",
+		mdLink: "brightMint",
+		mdLinkUrl: "transparent",
+		mdCode: "white",
+		mdCodeBlock: "offWhite",
+		mdCodeBlockBorder: "darkerGray",
+		mdQuote: "transparent",
+		mdQuoteBorder: "transparent",
+		mdHr: "focus",
+		mdListBullet: "darkerGray",
 
-		toolDiffAdded: "brightMint",
+		toolDiffAdded: "lowerMint",
 		toolDiffRemoved: "hotRed",
 		toolDiffContext: "offWhite",
 
 		syntaxComment: "darkerGray",
-		syntaxKeyword: "lowerBlue",
+		syntaxKeyword: "desaturatedBlue",
 		syntaxFunction: "lightBlue",
-		syntaxVariable: "offWhite",
-		syntaxString: "lowerBlue",
-		syntaxNumber: "lowerBlue",
-		syntaxType: "desaturatedBlue",
-		syntaxOperator: "gray",
-		syntaxPunctuation: "gray",
+		syntaxVariable: "white",
+		syntaxString: "brightMint",
+		syntaxNumber: "brightMint",
+		syntaxType: "white",
+		syntaxOperator: "transparent",
+		syntaxPunctuation: "darkerGray",
 
+		thinkingText: "gray",
 		thinkingOff: "focus",
 		thinkingMinimal: "bluishGrayBrighter",
 		thinkingLow: "lowerBlue",
@@ -138,8 +135,8 @@ function buildTheme({ name, palette: rawPalette }: BuildThemeInput): PiThemeOutp
 
 	const exportColors: Record<string, string> = {
 		pageBg: "bg",
-		cardBg: "focus",
-		infoBg: "bluishGray",
+		cardBg: "bg",
+		infoBg: "focus",
 	};
 
 	return {
@@ -185,6 +182,6 @@ const themes: Array<{ file: string; data: PiThemeOutput }> = [
 
 for (const theme of themes) {
 	const filePath = join(outputDir, theme.file);
-	writeFileSync(filePath, `${JSON.stringify(theme.data, null, 2)}\n`);
+	writeFileSync(filePath, `${JSON.stringify(theme.data, null, "\t")}\n`);
 	console.log(`wrote ${filePath}`);
 }

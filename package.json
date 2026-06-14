@@ -5,11 +5,11 @@
 	"packageManager": "pnpm@9.0.0",
 	"scripts": {
 		"clean:themes": "rm -rf themes && mkdir -p themes",
-		"prebuild": "pnpm run test && pnpm run clean:themes",
-		"build": "tsx src/generate-pi-theme.ts",
-		"generate:pi-theme": "pnpm run build",
+		"prebuild": "pnpm check && pnpm test && pnpm clean:themes",
+		"build": "node --import tsx src/generate-pi-theme.ts",
 		"check": "tsc --noEmit",
-		"test": "vitest run"
+		"test": "vitest run test/pi-theme-schema.test.ts",
+		"test:generated": "vitest run test/generated-theme.test.ts"
 	},
 	"devDependencies": {
 		"@types/node": "^22.0.0",

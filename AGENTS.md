@@ -8,11 +8,13 @@
 - Keep all theme validation tests in `test/pi-theme-schema.test.ts` unless there is a strong reason to split them.
 
 ## Current Conventions
-- `build` is the primary command for regeneration.
+- `build` is the primary command for regeneration and uses `node --import tsx src/generate-pi-theme.ts`.
 - `clean:themes` removes the generated `themes/` directory before regeneration.
+- `scripts/precommit.sh` is the repo-local guardrail: it runs `pnpm check`, `pnpm test`, and `pnpm build` before commit.
 - Do not generate `white-noitalics`; the upstream white and white-noitalics colors are identical.
 - Add new Pi theme variants only if there is a distinct upstream color basis.
 - The white palette is extracted from the upstream JSON by `src/extract-white-palette.ts`. Do not re-introduce hard-coded white colour values in `src/generate-pi-theme.ts`.
+- Palette values are normalised through `src/hex-utils.ts`; generated theme vars should be 6-digit hex values only.
 - When adding a new palette key to the white theme, add it to `CANONICAL_MAPPING` in `src/extract-white-palette.ts` and pin it with a test in the `White palette extraction` describe block.
 
 ## Documentation Hygiene
