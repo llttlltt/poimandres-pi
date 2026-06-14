@@ -1,6 +1,23 @@
 {
-	"name": "poimandres-theme-extractor",
-	"private": true,
+	"name": "poimandres-pi",
+	"version": "0.1.0",
+	"description": "pi coding agent theme based on the poimandres VSCode theme",
+	"license": "MIT",
+	"keywords": [
+		"pi-package",
+		"pi-theme",
+		"poimandres",
+		"theme"
+	],
+	"files": [
+		"themes/pi",
+		"README.md"
+	],
+	"pi": {
+		"themes": [
+			"./themes/pi"
+		]
+	},
 	"type": "module",
 	"packageManager": "pnpm@9.0.0",
 	"scripts": {
