@@ -3,6 +3,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { beforeAll, describe, expect, test } from "vitest";
 import { CANONICAL_MAPPING, extractWhitePalette } from "../src/extract-white-palette.js";
+import { normaliseHex, normalisePalette } from "../src/hex-utils.js";
 
 interface PiTheme {
 	$schema: string;
@@ -66,14 +67,19 @@ function loadVsCodeTheme(file: string, dir: string): VsCodeTheme {
 }
 
 function getUpstreamColorValues(source: VsCodeTheme): Set<string> {
-	const colors = new Set(Object.values(source.colors ?? {}));
-	const tokenForegrounds = new Set(
-		(source.tokenColors ?? [])
+	const rawValues = [
+		...Object.values(source.colors ?? {}),
+		...(source.tokenColors ?? [])
 			.map((entry) => entry?.settings?.foreground)
 			.filter((value): value is string => typeof value === "string" && value.length > 0),
-	);
+	];
+	// Also accept the alpha-stripped 6-digit form of any 8-digit upstream colour,
+	// since normalisePalette strips alpha before writing vars.
+	const normalisedVariants = rawValues
+		.filter((v) => /^#[0-9a-fA-F]{8}$/.test(v))
+		.map((v) => v.slice(0, 7));
 
-	return new Set([...colors, ...tokenForegrounds]);
+	return new Set([...rawValues, ...normalisedVariants]);
 }
 
 describe("Pi theme schema and mapping validation", () => {
@@ -148,6 +154,71 @@ describe("White palette extraction", () => {
 	test("selection resolves to #717cb425 (upstream editor.selectionBackground)", () => {
 		const palette = extractWhitePalette(whiteSourcePath);
 		expect(palette.selection).toBe("#717cb425");
+	});
+});
+
+describe("normaliseHex", () => {
+	test("passes a valid 6-digit hex unchanged", () => {
+		expect(normaliseHex("#5DE4c7")).toBe("#5DE4c7");
+		expect(normaliseHex("#ffffff")).toBe("#ffffff");
+		expect(normaliseHex("#000000")).toBe("#000000");
+	});
+
+	test("strips alpha from an 8-digit hex", () => {
+		expect(normaliseHex("#717cb425")).toBe("#717cb4");
+		expect(normaliseHex("#818cc425")).toBe("#818cc4");
+		expect(normaliseHex("#00000000")).toBe("#000000");
+	});
+
+	test("throws for a missing # prefix", () => {
+		expect(() => normaliseHex("5DE4c7")).toThrow("invalid hex colour");
+	});
+
+	test("throws for a 3-digit shorthand", () => {
+		expect(() => normaliseHex("#fff")).toThrow("invalid hex colour");
+	});
+
+	test("throws for non-hex characters", () => {
+		expect(() => normaliseHex("#GGGGGG")).toThrow("invalid hex colour");
+	});
+
+	test("throws for an arbitrary string", () => {
+		expect(() => normaliseHex("transparent")).toThrow("invalid hex colour");
+	});
+});
+
+describe("normalisePalette", () => {
+	test("normalises all values in a palette record", () => {
+		const result = normalisePalette({
+			selection: "#717cb425",
+			bg: "#1b1e28",
+			transparent: "#00000000",
+		});
+		expect(result).toEqual({
+			selection: "#717cb4",
+			bg: "#1b1e28",
+			transparent: "#000000",
+		});
+	});
+
+	test("throws and identifies the offending key", () => {
+		expect(() =>
+			normalisePalette({ good: "#1b1e28", bad: "not-a-colour" }),
+		).toThrow('invalid value for key "bad"');
+	});
+});
+
+describe("Generated theme vars hex validity", () => {
+	const SIX_DIGIT_HEX = /^#[0-9a-fA-F]{6}$/;
+
+	test.each(themeFiles)("all vars in %s are 6-digit hex (no alpha channel)", (file) => {
+		const theme = loadTheme(file);
+		for (const [key, value] of Object.entries(theme.vars)) {
+			expect(
+				SIX_DIGIT_HEX.test(value),
+				`${file}: vars.${key} = "${value}" is not a 6-digit hex colour`,
+			).toBe(true);
+		}
 	});
 });
 

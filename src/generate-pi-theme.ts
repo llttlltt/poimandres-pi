@@ -7,6 +7,7 @@ import {
 	storm as STORM_THEME,
 } from "../drcmda/poimandres-theme/src/theme.js";
 import { extractWhitePalette } from "./extract-white-palette.js";
+import { normalisePalette } from "./hex-utils.js";
 
 interface PoimandresTheme {
 	colors: Record<string, string>;
@@ -45,35 +46,39 @@ const whiteColors = extractWhitePalette(
 	resolve(process.cwd(), "drcmda/poimandres-theme/themes/poimandres-color-theme-white.json"),
 );
 
-function buildTheme({ name, palette }: BuildThemeInput): PiThemeOutput {
+function buildTheme({ name, palette: rawPalette }: BuildThemeInput): PiThemeOutput {
+	const palette = normalisePalette(rawPalette);
 	const vars = {
-		bg: palette.bg,
-		focus: palette.focus,
-		gray: palette.gray,
-		offWhite: palette.offWhite,
-		lightBlue: palette.lightBlue,
-		brightMint: palette.brightMint,
-		hotRed: palette.hotRed,
-		lowerMint: palette.lowerMint,
-		lowerBlue: palette.lowerBlue,
-		desaturatedBlue: palette.desaturatedBlue,
-		bluishGray: palette.bluishGray,
-		bluishGrayBrighter: palette.bluishGrayBrighter,
-		darkerGray: palette.darkerGray,
 		brightYellow: palette.brightYellow,
-		pink: palette.pink,
+		brightMint: palette.brightMint,
+		lowerMint: palette.lowerMint,
 		blueishGreen: palette.blueishGreen,
+
+		lowerBlue: palette.lowerBlue,
+		lightBlue: palette.lightBlue,
+		desaturatedBlue: palette.desaturatedBlue,
+		bluishGrayBrighter: palette.bluishGrayBrighter,
+
+		hotRed: palette.hotRed,
+		pink: palette.pink,
+		gray: palette.gray,
+
+		darkerGray: palette.darkerGray,
+		bluishGray: palette.bluishGray,
+		focus: palette.focus,
+		bg: palette.bg,
+
+		offWhite: palette.offWhite,
+		selection: palette.selection,
+
+		white: palette.white,
+		black: palette.black,
 		transparent: palette.transparent,
-		// Pi does not support RGBA hex. The upstream `selection` is semi-transparent
-		// (e.g. #717cb425). `focus` is the nearest solid equivalent — the canonical
-		// "active area" background in every Poimandres variant, and already present
-		// in the upstream JSON (activityBarBadge.background).
-		selection: palette.focus,
 	} as const;
 
 	const colors: Record<string, keyof typeof vars | ""> = {
 		accent: "brightMint",
-		border: "bg",
+		border: "focus",
 		borderAccent: "brightMint",
 		borderMuted: "lowerBlue",
 		success: "brightMint",
@@ -85,47 +90,47 @@ function buildTheme({ name, palette }: BuildThemeInput): PiThemeOutput {
 		thinkingText: "desaturatedBlue",
 
 		selectedBg: "selection",
-		userMessageBg: "focus",
+		userMessageBg: "bg",
 		userMessageText: "",
 		customMessageBg: "bg",
 		customMessageText: "",
 		customMessageLabel: "lightBlue",
-		toolPendingBg: "focus",
-		toolSuccessBg: "bluishGray",
+		toolPendingBg: "bg",
+		toolSuccessBg: "focus",
 		toolErrorBg: "hotRed",
 		toolTitle: "brightMint",
 		toolOutput: "offWhite",
 
-		mdHeading: "offWhite",
-		mdLink: "lightBlue",
-		mdLinkUrl: "desaturatedBlue",
-		mdCode: "brightMint",
-		mdCodeBlock: "offWhite",
+		mdHeading: "white",
+		mdLink: "lowerBlue",
+		mdLinkUrl: "lowerBlue",
+		mdCode: "lowerBlue",
+		mdCodeBlock: "desaturatedBlue",
 		mdCodeBlockBorder: "bluishGray",
-		mdQuote: "bluishGrayBrighter",
+		mdQuote: "lowerBlue",
 		mdQuoteBorder: "lowerBlue",
 		mdHr: "darkerGray",
-		mdListBullet: "lightBlue",
+		mdListBullet: "lowerBlue",
 
-		toolDiffAdded: "lowerMint",
+		toolDiffAdded: "brightMint",
 		toolDiffRemoved: "hotRed",
-		toolDiffContext: "gray",
+		toolDiffContext: "offWhite",
 
 		syntaxComment: "darkerGray",
 		syntaxKeyword: "lowerBlue",
 		syntaxFunction: "lightBlue",
 		syntaxVariable: "offWhite",
-		syntaxString: "brightMint",
+		syntaxString: "lowerBlue",
 		syntaxNumber: "lowerBlue",
 		syntaxType: "desaturatedBlue",
 		syntaxOperator: "gray",
 		syntaxPunctuation: "gray",
 
-		thinkingOff: "bluishGray",
-		thinkingMinimal: "darkerGray",
-		thinkingLow: "lightBlue",
-		thinkingMedium: "lowerBlue",
-		thinkingHigh: "brightMint",
+		thinkingOff: "focus",
+		thinkingMinimal: "bluishGrayBrighter",
+		thinkingLow: "lowerBlue",
+		thinkingMedium: "brightMint",
+		thinkingHigh: "brightYellow",
 		thinkingXhigh: "hotRed",
 
 		bashMode: "brightMint",
