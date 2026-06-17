@@ -19,7 +19,7 @@
 		]
 	},
 	"type": "module",
-	"packageManager": "pnpm@9.0.0",
+	"packageManager": "pnpm@11.7.0",
 	"scripts": {
 		"clean:themes": "rm -rf themes && mkdir -p themes",
 		"prebuild": "pnpm check && pnpm test && pnpm clean:themes",
