@@ -1,6 +1,6 @@
 <div align="center">
-  <img width="200px" src="./poimandres-theme/assets/dots.png" alt="Dots" />
-  <h1>poimandres-pi 🎨</h1>
+  <img width="200px" src="https://raw.githubusercontent.com/drcmda/poimandres-theme/main/assets/dots.png" alt="Dots" />
+  <h1>poimandres-pi</h1>
 </div>
 
 <p align="center">
@@ -29,7 +29,11 @@
 ## Installation
 
 ```bash
+# From npm
 pi install npm:poimandres-pi
+
+# From git
+pi install git:github.com/llttlltt/poimandres-pi
 ```
 
 Then select a theme via `/settings` or in your `settings.json`:
@@ -46,6 +50,8 @@ To try without a permanent install:
 
 ```bash
 pi -e npm:poimandres-pi
+# or
+pi -e git:github.com/llttlltt/poimandres-pi
 ```
 
 ## Development
@@ -54,25 +60,36 @@ The theme files in `themes/pi/` are generated from the upstream [poimandres-them
 
 ### Setup
 
+> **Note:** `--recurse-submodules` is required. Without it the upstream theme source will be missing and the build will fail.
+
 ```bash
-git clone --recurse-submodules https://github.com/<your-org>/poimandres-pi.git
+git clone --recurse-submodules https://github.com/llttlltt/poimandres-pi.git
 cd poimandres-pi
 pnpm install
+pnpm build
+
+# Verify the generated themes are correct
+pnpm test:generated
 ```
 
 ### Commands
 
 | Command | Purpose |
 |---|---|
-| `pnpm build` | Regenerate themes (runs type-check, unit tests, and clean as a prebuild step) |
-| `pnpm check` | Type-check |
+| `pnpm build` | Regenerate themes (lint, type-check, unit tests, and clean as a prebuild step) |
+| `pnpm verify` | Lint, type-check, unit tests, and clean — without building |
+| `pnpm lint` | Fix formatting and lint issues via Biome |
+| `pnpm format` | Format files only via Biome |
+| `pnpm check` | Type-check only |
 | `pnpm test` | Unit & extraction tests |
-| `pnpm test:generated` | Generated-artifact tests |
+| `pnpm test:generated` | Verify generated themes after a build |
+| `pnpm pi:dev` | Run pi locally with this theme loaded |
+| `pnpm pi:install-local` | Install theme into local pi instance |
 
 ## 🙌 Related
 
 - [poimandres-theme](https://github.com/drcmda/poimandres-theme): VSCode version
-- [poimandres-terminal](https://github.com/mrousavy/poimandres-terminal): macOS / iTerm / Windows Terminal version
+- [poimandres-terminal](https://github.com/alii/poimandres-terminal): macOS / iTerm / Windows Terminal version
 - [poimandres.nvim](https://github.com/olivercederborg/poimandres.nvim): Neovim version
 - [poimandres.zed](https://github.com/mshaugh/poimandres.zed): Zed version
 - [poimandres-alacritty](https://github.com/z0al/poimandres-alacritty): Alacritty version

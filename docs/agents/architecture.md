@@ -1,5 +1,24 @@
 # Architecture & Conventions
 
+## Key Decisions
+
+- **Generated artefacts are committed** — `themes/pi/` is tracked in git so the published npm package contains ready-to-use files without requiring a build step on install.
+- **Submodule is the single source of truth** — all colour values originate from `poimandres-theme/`. No upstream palette colours are hard-coded in `src/`.
+- **White palette is extracted dynamically** — `src/palette-extractor.ts` resolves `${colors.X}` references from the upstream white theme at build time rather than being pinned.
+- **Individual theme paths in `pi.themes`** — `package.json` lists each theme file explicitly (not a directory) to match Pi package conventions.
+- **Biome scanner exclusions** — `poimandres-theme/` uses a force-ignore pattern (`!!poimandres-theme`) so the scanner never enters the submodule. `themes/pi/` uses a regular negation (`!themes/pi`) so type information can still be extracted from generated files, but they are not linted or formatted.
+
+## Structure
+
+```
+src/                    Source — extraction, building, hex utilities
+themes/pi/              Generated outputs (committed)
+poimandres-theme/       Read-only upstream submodule
+test/                   Unit tests (pi-theme-schema) + artefact tests (generated-theme)
+.github/workflows/      CI (ci.yml) and release + publish (release-please.yml)
+docs/agents/            Architecture and testing conventions
+```
+
 ## Module Responsibilities
 
 | File | Role | Key exports |
@@ -26,6 +45,5 @@
 
 - Do not generate a `white-noitalics` variant — upstream white and white-noitalics colours are identical.
 - Add new Pi theme variants only when there is a distinct upstream colour basis.
-- `syntaxOperator` is intentionally emitted as the raw hex literal `#ff0000`.
 - Most accent colours differ intentionally between dark and white variants.
 - The `export` block in each generated theme file is a small key→var mapping, not an empty object.

@@ -1,30 +1,24 @@
 # AGENTS.md
 
-Extracts colour values from the upstream Poimandres VSCode theme submodule and generates Pi coding-agent theme JSON.
+`poimandres-pi` extracts colour values from the upstream [Poimandres VSCode theme](https://github.com/drcmda/poimandres-theme) (read-only submodule) and generates three Pi-compatible theme JSON files.
 
-**Package manager**: `pnpm`
-
-## Outputs
-
-`themes/pi/poimandres.json`, `themes/pi/poimandres-storm.json`, `themes/pi/poimandres-white.json`
+**Package manager**: `pnpm` (v11) · **Node**: v24
 
 ## Commands
 
 | Command | Purpose |
 |---|---|
-| `pnpm build` | Regenerate themes (runs type-check, unit tests, and clean as a prebuild step) |
-| `pnpm check` | Type-check |
-| `pnpm test` | Unit & extraction tests |
-| `pnpm test:generated` | Generated-artifact tests |
-
-The git pre-commit hook runs `pnpm build && pnpm test:generated` via `scripts/precommit.sh`.
+| `pnpm build` | Regenerate themes — runs verify + clean as prebuild |
+| `pnpm verify` | Lint, type-check, and unit test without building |
+| `pnpm lint` | Fix all formatting and lint issues (`biome check --write`) |
 
 ## Hard Constraints
 
-- `poimandres-theme/` is a read-only git submodule. Never modify files inside it.
+- `poimandres-theme/` is a read-only git submodule — never modify files inside it. If accidentally dirtied, restore with `git reset --hard HEAD` inside the submodule (`git checkout -- .` does not fully revert).
 - Generated outputs go in `themes/pi/` only.
 
 ## Further Reading
 
-- [Architecture & conventions](docs/agents/architecture.md)
+- [Architecture & key decisions](docs/agents/architecture.md)
+- [CI/CD & release workflow](docs/agents/ci-cd.md)
 - [Testing conventions](docs/agents/testing.md)
