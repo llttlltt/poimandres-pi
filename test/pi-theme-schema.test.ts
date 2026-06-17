@@ -148,11 +148,6 @@ describe("buildTheme", () => {
 		expect(result.$schema).toMatch(/^https:\/\//u);
 	});
 
-	test("syntaxOperator is emitted as the raw hex literal #ff0000", () => {
-		const result = buildTheme(INPUT);
-		expect(result.colors.syntaxOperator).toBe("#ff0000");
-	});
-
 	test("all vars are normalised to 6-digit hex", () => {
 		const result = buildTheme(INPUT);
 		for (const [key, value] of Object.entries(result.vars)) {

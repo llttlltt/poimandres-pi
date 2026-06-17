@@ -101,7 +101,7 @@ export function buildTheme({
 		syntaxString: "brightMint",
 		syntaxNumber: "brightMint",
 		syntaxType: "white",
-		syntaxOperator: "#ff0000",
+		syntaxOperator: "brightMint",
 		syntaxPunctuation: "darkerGray",
 
 		thinkingText: "gray",
