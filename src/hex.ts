@@ -15,20 +15,26 @@ export function normaliseHex(hex: string): string {
 	if (HEX_ALPHA_REGEX.test(hex)) {
 		return hex.slice(0, 7);
 	}
-	throw new Error(`normaliseHex: invalid hex colour "${hex}" — expected #RRGGBB or #RRGGBBAA`);
+	throw new Error(
+		`normaliseHex: invalid hex colour "${hex}" — expected #RRGGBB or #RRGGBBAA`,
+	);
 }
 
 /**
  * Applies normaliseHex to every value in a palette record.
  * Throws if any value is not a valid hex colour.
  */
-export function normalisePalette<T extends Record<string, string>>(palette: T): T {
+export function normalisePalette<T extends Record<string, string>>(
+	palette: T,
+): T {
 	return Object.fromEntries(
 		Object.entries(palette).map(([key, value]) => {
 			try {
 				return [key, normaliseHex(value)];
 			} catch {
-				throw new Error(`normalisePalette: invalid value for key "${key}": ${value}`);
+				throw new Error(
+					`normalisePalette: invalid value for key "${key}": ${value}`,
+				);
 			}
 		}),
 	) as T;

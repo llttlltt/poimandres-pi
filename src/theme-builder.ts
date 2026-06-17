@@ -1,5 +1,5 @@
-import { type Palette } from "./palette.js";
 import { normalisePalette } from "./hex.js";
+import type { Palette } from "./palette.js";
 
 export const SCHEMA_URL =
 	"https://raw.githubusercontent.com/earendil-works/pi/main/packages/coding-agent/src/modes/interactive/theme/theme-schema.json";
@@ -17,7 +17,10 @@ export interface BuildThemeInput {
 	palette: Palette;
 }
 
-export function buildTheme({ name, palette: rawPalette }: BuildThemeInput): PiThemeOutput {
+export function buildTheme({
+	name,
+	palette: rawPalette,
+}: BuildThemeInput): PiThemeOutput {
 	const palette = normalisePalette(rawPalette);
 
 	const vars = {

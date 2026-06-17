@@ -1,5 +1,5 @@
 import { readFileSync } from "node:fs";
-import { type Palette, type PaletteKey } from "./palette.js";
+import type { Palette, PaletteKey } from "./palette.js";
 
 type PaletteWithoutBlueishGreen = Exclude<PaletteKey, "blueishGreen">;
 
@@ -36,7 +36,11 @@ const SOURCE_TOKEN_BY_KEY: Record<PaletteWithoutBlueishGreen, string> = {
 	transparent: "focusBorder",
 };
 
-function resolveTokenReference(source: VsCodeTheme, reference: string, key: string): string {
+function resolveTokenReference(
+	source: VsCodeTheme,
+	reference: string,
+	key: string,
+): string {
 	const match = reference.match(COLOR_REFERENCE_REGEX);
 	if (match) {
 		const resolved = source.colors?.[match[1]];
@@ -50,7 +54,11 @@ function resolveTokenReference(source: VsCodeTheme, reference: string, key: stri
 	return reference;
 }
 
-function extractTokenColor(source: VsCodeTheme, token: string, key: string): string {
+function extractTokenColor(
+	source: VsCodeTheme,
+	token: string,
+	key: string,
+): string {
 	const value = source.colors?.[token];
 	if (value === undefined) {
 		throw new Error(
@@ -60,7 +68,11 @@ function extractTokenColor(source: VsCodeTheme, token: string, key: string): str
 	return resolveTokenReference(source, value, key);
 }
 
-function extractTokenColorFromScope(source: VsCodeTheme, scopeQuery: string, key: string): string {
+function extractTokenColorFromScope(
+	source: VsCodeTheme,
+	scopeQuery: string,
+	key: string,
+): string {
 	const tokenEntry = (source.tokenColors ?? []).find((entry) => {
 		const scope = entry.scope;
 		return (Array.isArray(scope) ? scope : [scope]).includes(scopeQuery);
@@ -78,11 +90,17 @@ export function extractWhitePalette(whiteJsonPath: string): Palette {
 	const source = JSON.parse(readFileSync(whiteJsonPath, "utf8")) as VsCodeTheme;
 	const palette = {} as Palette;
 
-	for (const key of Object.keys(SOURCE_TOKEN_BY_KEY) as Array<Exclude<PaletteKey, "blueishGreen">>) {
+	for (const key of Object.keys(SOURCE_TOKEN_BY_KEY) as Array<
+		Exclude<PaletteKey, "blueishGreen">
+	>) {
 		palette[key] = extractTokenColor(source, SOURCE_TOKEN_BY_KEY[key], key);
 	}
 
-	palette.blueishGreen = extractTokenColorFromScope(source, BLUEISH_GREEN_SCOPE, "blueishGreen");
+	palette.blueishGreen = extractTokenColorFromScope(
+		source,
+		BLUEISH_GREEN_SCOPE,
+		"blueishGreen",
+	);
 
 	return palette;
 }

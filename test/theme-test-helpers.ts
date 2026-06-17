@@ -1,17 +1,22 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { HEX_ALPHA_REGEX } from "../src/hex";
-import { SCHEMA_URL, type PiThemeOutput } from "../src/theme-builder.js";
-import { type VsCodeTheme } from "../src/palette-extractor.js";
+import type { VsCodeTheme } from "../src/palette-extractor.js";
+import { type PiThemeOutput, SCHEMA_URL } from "../src/theme-builder.js";
 
-export type { PiThemeOutput as PiTheme };
-export type { VsCodeTheme };
+export type { PiThemeOutput as PiTheme, VsCodeTheme };
 export const schemaPath = resolve(".cache/pi-theme-schema.json");
 export const themeDir = resolve("themes/pi");
 export const sourceThemeDir = resolve("poimandres-theme/themes");
-export const whiteSourcePath = resolve("poimandres-theme/themes/poimandres-color-theme-white.json");
+export const whiteSourcePath = resolve(
+	"poimandres-theme/themes/poimandres-color-theme-white.json",
+);
 
-export const themeFiles = ["poimandres.json", "poimandres-storm.json", "poimandres-white.json"] as const;
+export const themeFiles = [
+	"poimandres.json",
+	"poimandres-storm.json",
+	"poimandres-white.json",
+] as const;
 
 export const sourceThemeMap: Record<(typeof themeFiles)[number], string> = {
 	"poimandres.json": "poimandres-color-theme.json",
@@ -35,7 +40,10 @@ export async function loadSchema(): Promise<Record<string, unknown>> {
 		writeFileSync(schemaPath, schema);
 	}
 
-	return JSON.parse(readFileSync(schemaPath, "utf8")) as Record<string, unknown>;
+	return JSON.parse(readFileSync(schemaPath, "utf8")) as Record<
+		string,
+		unknown
+	>;
 }
 
 export function loadTheme(file: string, dir: string = themeDir): PiThemeOutput {
@@ -51,9 +59,14 @@ export function getUpstreamColorValues(source: VsCodeTheme): Set<string> {
 		...Object.values(source.colors ?? {}),
 		...(source.tokenColors ?? [])
 			.map((entry) => entry?.settings?.foreground)
-			.filter((value): value is string => typeof value === "string" && value.length > 0),
+			.filter(
+				(value): value is string =>
+					typeof value === "string" && value.length > 0,
+			),
 	];
-	const normalisedVariants = rawValues.filter((v) => HEX_ALPHA_REGEX.test(v)).map((v) => v.slice(0, 7));
+	const normalisedVariants = rawValues
+		.filter((v) => HEX_ALPHA_REGEX.test(v))
+		.map((v) => v.slice(0, 7));
 
 	return new Set([...rawValues, ...normalisedVariants]);
 }

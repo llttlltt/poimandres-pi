@@ -1,13 +1,20 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, test } from "vitest";
+import {
+	HEX_ALPHA_REGEX,
+	HEX_REGEX,
+	normaliseHex,
+	normalisePalette,
+} from "../src/hex.js";
+import type { Palette } from "../src/palette.js";
 import { extractWhitePalette } from "../src/palette-extractor.js";
-import { HEX_ALPHA_REGEX, HEX_REGEX, normaliseHex, normalisePalette } from "../src/hex.js";
-import { buildTheme, type BuildThemeInput } from "../src/theme-builder.js";
-import { type Palette } from "../src/palette.js";
-import { whiteSourcePath, type VsCodeTheme } from "./theme-test-helpers.js";
+import { type BuildThemeInput, buildTheme } from "../src/theme-builder.js";
+import { type VsCodeTheme, whiteSourcePath } from "./theme-test-helpers.js";
 
 describe("White palette extraction", () => {
-	const sourceWhiteJson = JSON.parse(readFileSync(whiteSourcePath, "utf8")) as VsCodeTheme;
+	const sourceWhiteJson = JSON.parse(
+		readFileSync(whiteSourcePath, "utf8"),
+	) as VsCodeTheme;
 
 	test("extractWhitePalette follows the same palette shape as the source theme", () => {
 		const palette = extractWhitePalette(whiteSourcePath);
@@ -41,7 +48,9 @@ describe("White palette extraction", () => {
 		const palette = extractWhitePalette(whiteSourcePath);
 		const entry = (sourceWhiteJson.tokenColors ?? []).find((e) => {
 			const s = e.scope;
-			return (Array.isArray(s) ? s : [s]).includes("source.sass keyword.control");
+			return (Array.isArray(s) ? s : [s]).includes(
+				"source.sass keyword.control",
+			);
 		});
 		expect(entry?.settings?.foreground).toBeDefined();
 		expect(palette.blueishGreen).toBe(entry?.settings?.foreground);
@@ -101,7 +110,9 @@ describe("normalisePalette", () => {
 	});
 
 	test("throws and identifies the offending key", () => {
-		expect(() => normalisePalette({ good: "#1b1e28", bad: "not-a-colour" })).toThrow('invalid value for key "bad"');
+		expect(() =>
+			normalisePalette({ good: "#1b1e28", bad: "not-a-colour" }),
+		).toThrow('invalid value for key "bad"');
 	});
 });
 
@@ -145,7 +156,10 @@ describe("buildTheme", () => {
 	test("all vars are normalised to 6-digit hex", () => {
 		const result = buildTheme(INPUT);
 		for (const [key, value] of Object.entries(result.vars)) {
-			expect(HEX_REGEX.test(value), `vars.${key} = "${value}" should be 6-digit hex`).toBe(true);
+			expect(
+				HEX_REGEX.test(value),
+				`vars.${key} = "${value}" should be 6-digit hex`,
+			).toBe(true);
 		}
 	});
 
@@ -154,12 +168,19 @@ describe("buildTheme", () => {
 		const vars = new Set(Object.keys(result.vars));
 		for (const [key, value] of Object.entries(result.colors)) {
 			if (value === "" || HEX_REGEX.test(value)) continue;
-			expect(vars.has(value), `colors.${key} = "${value}" is not declared in vars`).toBe(true);
+			expect(
+				vars.has(value),
+				`colors.${key} = "${value}" is not declared in vars`,
+			).toBe(true);
 		}
 	});
 
 	test("export contains pageBg, cardBg, and infoBg", () => {
 		const result = buildTheme(INPUT);
-		expect(result.export).toMatchObject({ pageBg: expect.any(String), cardBg: expect.any(String), infoBg: expect.any(String) });
+		expect(result.export).toMatchObject({
+			pageBg: expect.any(String),
+			cardBg: expect.any(String),
+			infoBg: expect.any(String),
+		});
 	});
 });

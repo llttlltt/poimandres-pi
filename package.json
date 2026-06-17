@@ -15,20 +15,27 @@
 	],
 	"pi": {
 		"themes": [
-			"./themes/pi"
-		]
+			"./themes/pi/poimandres.json",
+			"./themes/pi/poimandres-storm.json",
+			"./themes/pi/poimandres-white.json"
+		],
+		"image": "https://raw.githubusercontent.com/llttlltt/poimandres-pi/master/assets/poimandres.png"
 	},
 	"type": "module",
 	"packageManager": "pnpm@11.7.0",
 	"scripts": {
-		"clean:themes": "rm -rf themes && mkdir -p themes",
-		"prebuild": "pnpm check && pnpm test && pnpm clean:themes",
 		"build": "node --import tsx src/generate-pi-theme.ts",
 		"check": "tsc --noEmit",
+		"clean:themes": "rm -rf themes && mkdir -p themes",
+		"format": "biome format --write .",
+		"lint": "biome check --write .",
+		"prebuild": "pnpm verify && pnpm clean:themes",
 		"test": "vitest run test/pi-theme-schema.test.ts",
-		"test:generated": "vitest run test/generated-theme.test.ts"
+		"test:generated": "vitest run test/generated-theme.test.ts",
+		"verify": "pnpm run lint && pnpm run check && pnpm run test"
 	},
 	"devDependencies": {
+		"@biomejs/biome": "^2.5.0",
 		"@types/node": "^22.0.0",
 		"ajv": "^8.20.0",
 		"tsx": "^4.19.0",
