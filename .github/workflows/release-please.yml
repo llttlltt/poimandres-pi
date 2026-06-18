@@ -28,9 +28,9 @@ jobs:
           token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
           release-type: node
 
-      - name: Auto-merge release PR
+      - name: Merge release PR
         if: ${{ steps.release.outputs.pr }}
-        run: gh pr merge --auto --merge "${{ fromJson(steps.release.outputs.pr).number }}"
+        run: gh pr merge --merge "${{ fromJson(steps.release.outputs.pr).number }}"
         env:
           GH_TOKEN: ${{ secrets.RELEASE_PLEASE_TOKEN }}
 
