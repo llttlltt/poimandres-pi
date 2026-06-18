@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.4.2](https://github.com/llttlltt/poimandres-pi/compare/v0.4.1...v0.4.2) (2026-06-18)
+
+
+### Bug Fixes
+
+* infrastructure update for trusted publishing and version sync ([1d9580e](https://github.com/llttlltt/poimandres-pi/commit/1d9580e74720ed7d6b3a59bc5791b3dbe56a5401))
+* infrastructure update for trusted publishing and version sync ([1d5c0b6](https://github.com/llttlltt/poimandres-pi/commit/1d5c0b67a19743e2ac5f0725e1da9a2c60d70d8a))
+
 ## [0.4.1](https://github.com/llttlltt/poimandres-pi/compare/poimandres-pi-v0.4.0...poimandres-pi-v0.4.1) (2026-06-18)
 
 
