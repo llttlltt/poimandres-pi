@@ -4,8 +4,8 @@
 </div>
 
 <p align="center">
-  <a href="https://www.npmjs.com/package/poimandres-pi">
-    <img alt="npm" src="https://img.shields.io/npm/v/poimandres-pi?style=for-the-badge&color=5DE4c7" />
+  <a href="https://www.npmjs.com/package/@llttlltt/poimandres-pi">
+    <img alt="npm" src="https://img.shields.io/npm/v/@llttlltt/poimandres-pi?style=for-the-badge&color=5DE4c7" />
   </a>
 </p>
 
@@ -30,7 +30,7 @@
 
 ```bash
 # From npm
-pi install npm:poimandres-pi
+pi install npm:@llttlltt/poimandres-pi
 
 # From git
 pi install git:github.com/llttlltt/poimandres-pi
@@ -49,7 +49,7 @@ Available theme names: `poimandres`, `poimandres storm`, `poimandres white`.
 To try without a permanent install:
 
 ```bash
-pi -e npm:poimandres-pi
+pi -e npm:@llttlltt/poimandres-pi
 # or
 pi -e git:github.com/llttlltt/poimandres-pi
 ```
@@ -79,12 +79,8 @@ pnpm test:generated
 | `pnpm build` | Regenerate themes (lint, type-check, unit tests, and clean as a prebuild step) |
 | `pnpm verify` | Lint, type-check, unit tests, and clean — without building |
 | `pnpm lint` | Fix formatting and lint issues via Biome |
-| `pnpm format` | Format files only via Biome |
-| `pnpm check` | Type-check only |
 | `pnpm test` | Unit & extraction tests |
 | `pnpm test:generated` | Verify generated themes after a build |
-| `pnpm pi:dev` | Run pi locally with this theme loaded |
-| `pnpm pi:install-local` | Install theme into local pi instance |
 
 ## 🙌 Related
 
