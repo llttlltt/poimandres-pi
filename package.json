@@ -1,10 +1,19 @@
 {
 	"name": "@llttlltt/poimandres-pi",
-	"version": "0.4.2",
 	"description": "pi coding agent theme based on the poimandres VSCode theme",
 	"license": "MIT",
+	"version": "0.4.2",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/llttlltt/poimandres-pi.git"
+	},
+	"bugs": {
+		"url": "https://github.com/llttlltt/poimandres-pi/issues"
+	},
+	"homepage": "https://github.com/llttlltt/poimandres-pi#readme",
 	"publishConfig": {
-		"access": "public"
+		"access": "public",
+		"provenance": true
 	},
 	"keywords": [
 		"pi-package",
