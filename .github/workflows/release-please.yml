@@ -30,7 +30,7 @@ jobs:
 
       - name: Merge release PR
         if: ${{ steps.release.outputs.pr }}
-        run: gh pr merge --merge "${{ fromJson(steps.release.outputs.pr).number }}"
+        run: gh pr merge --merge --repo "${{ github.repository }}" "${{ fromJson(steps.release.outputs.pr).number }}"
         env:
           GH_TOKEN: ${{ secrets.RELEASE_PLEASE_TOKEN }}
 
