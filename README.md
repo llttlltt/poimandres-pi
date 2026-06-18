@@ -1,30 +1,17 @@
+
 <div align="center">
   <img width="200px" src="https://raw.githubusercontent.com/drcmda/poimandres-theme/main/assets/dots.png" alt="Dots" />
-  <h1>poimandres-pi</h1>
+
+# poimandres-pi
+
+[![npm](https://img.shields.io/npm/v/@llttlltt/poimandres-pi?style=for-the-badge&color=5DE4c7)](https://www.npmjs.com/package/@llttlltt/poimandres-pi)
+
+[Pi Coding Agent](https://github.com/earendil-works/pi/tree/main) theme based on the [Poimandres VSCode theme](https://github.com/drcmda/poimandres-theme).
 </div>
 
-<p align="center">
-  <a href="https://www.npmjs.com/package/@llttlltt/poimandres-pi">
-    <img alt="npm" src="https://img.shields.io/npm/v/@llttlltt/poimandres-pi?style=for-the-badge&color=5DE4c7" />
-  </a>
-</p>
-
-<p align="center">
-  <a href="https://github.com/earendil-works/pi/tree/main">Pi Coding Agent</a> theme based on the <a href="https://github.com/drcmda/poimandres-theme">Poimandres VSCode theme</a>.
-</p>
-
-<table>
-  <tr>
-    <td align="center"><strong>poimandres</strong></td>
-    <td align="center"><strong>poimandres storm</strong></td>
-    <td align="center"><strong>poimandres white</strong></td>
-  </tr>
-  <tr>
-    <td align="center"><img src="./assets/poimandres.png" alt="Poimandres Theme" width="260" /></td>
-    <td align="center"><img src="./assets/poimandres-storm.png" alt="Storm Theme" width="260" /></td>
-    <td align="center"><img src="./assets/poimandres-white.png" alt="White Theme" width="260" /></td>
-  </tr>
-</table>
+| **poimandres** | **poimandres storm** | **poimandres white** |
+| :---: | :---: | :---: |
+| ![Poimandres Theme](https://raw.githubusercontent.com/llttlltt/poimandres-pi/master/assets/poimandres.png) | ![Storm Theme](https://raw.githubusercontent.com/llttlltt/poimandres-pi/master/assets/poimandres-storm.png) | ![White Theme](https://raw.githubusercontent.com/llttlltt/poimandres-pi/master/assets/poimandres-white.png) |
 
 ## Installation
 
@@ -75,12 +62,15 @@ pnpm test:generated
 ### Commands
 
 | Command | Purpose |
-|---|---|
+| :--- | :--- |
 | `pnpm build` | Regenerate themes (lint, type-check, unit tests, and clean as a prebuild step) |
-| `pnpm verify` | Lint, type-check, unit tests, and clean — without building |
-| `pnpm lint` | Fix formatting and lint issues via Biome |
-| `pnpm test` | Unit & extraction tests |
+| `pnpm verify` | Lint, type-check, and unit tests — without building |
+| `pnpm lint` | Fix all formatting and lint issues |
+| `pnpm format` | Format source files only |
+| `pnpm check` | TypeScript type-check only |
+| `pnpm test` | Run schema unit tests |
 | `pnpm test:generated` | Verify generated themes after a build |
+| `pnpm clean:themes` | Delete and recreate the `themes/` output directory |
 
 ## 🙌 Related
 

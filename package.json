@@ -15,9 +15,7 @@
 	],
 	"pi": {
 		"themes": [
-			"./themes/pi/poimandres.json",
-			"./themes/pi/poimandres-storm.json",
-			"./themes/pi/poimandres-white.json"
+			"./themes/pi"
 		],
 		"image": "https://raw.githubusercontent.com/llttlltt/poimandres-pi/master/assets/poimandres.png"
 	},

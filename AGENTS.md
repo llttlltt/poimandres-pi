@@ -10,7 +10,12 @@
 |---|---|
 | `pnpm build` | Regenerate themes — runs verify + clean as prebuild |
 | `pnpm verify` | Lint, type-check, and unit test without building |
-| `pnpm lint` | Fix all formatting and lint issues (`biome check --write`) |
+| `pnpm lint` | Fix all formatting and lint issues |
+| `pnpm format` | Format source files only |
+| `pnpm check` | TypeScript type-check only |
+| `pnpm test` | Run schema unit tests against `pi-theme-schema.test.ts` |
+| `pnpm test:generated` | Verify generated theme files after a build |
+| `pnpm clean:themes` | Delete and recreate the `themes/` output directory |
 
 ## Hard Constraints
 
