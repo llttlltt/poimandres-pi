@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.3](https://github.com/llttlltt/poimandres-pi/compare/v0.4.2...v0.4.3) (2026-06-18)
+
+
+### Bug Fixes
+
+* add repository URL to package.json for provenance verification ([d5d18f1](https://github.com/llttlltt/poimandres-pi/commit/d5d18f19d3b93c7fb95ddb3e73fdbc921d4de811))
+
 ## [0.4.2](https://github.com/llttlltt/poimandres-pi/compare/v0.4.1...v0.4.2) (2026-06-18)
 
 
